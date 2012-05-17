@@ -33,7 +33,8 @@ send404 = function(res) {
   res.end();
 };
 
-server.listen(58924);
+var port = process.env.PORT || 8000;
+server.listen(port);
 
 // socket.io, let's eat some cake!
 var io = require('socket.io').listen(server);
