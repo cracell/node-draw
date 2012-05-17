@@ -12,7 +12,7 @@ function connect() {
     socket.on('reconnecting', function( nextRetry ){ status_update("Reconnecting in " + nextRetry + " seconds"); });
     socket.on('reconnect_failed', function() { message("Reconnect Failed"); });
     socket.on('nachos', function(text) { message(text)});
-    socket.on('drawPoints', function(points) { drawSpot(points.x, points.y)});
+    socket.on('drawPoints', function(point) { drawSpot(point)});
 
     firstconnect = false;
   } else {
@@ -44,23 +44,31 @@ function nachos() {
   socket.emit('nachos', "Nachos guys!");
 }
 
-function sendDrawPoints(x, y) {
-  socket.emit('drawPoints', {x: x, y: y})
+function sendDrawPoints(point) {
+  socket.emit('drawPoints', point)
+}
+
+function pointsRelativeToObject(e, object) {
+  var point = {};
+  point.x = e.clientX - object.offset().left + document.documentElement.scrollLeft + document.body.scrollLeft;
+  point.y = e.clientY - object.offset().top + document.documentElement.scrollTop + document.body.scrollTop;
+  return(point); 
 }
 
 $(function() {
   connect();
   
   $('#canvas').bind('mousedown', function(e){
-    drawSpot(e.clientX, e.clientY);
-    sendDrawPoints(e.clientX, e.clientY);
+    var point = pointsRelativeToObject(e, $(this));
+    drawSpot(point);
+    sendDrawPoints(point);
   });
   
   initCanvas();
 });
 
-function drawSpot(x, y) {
-   context.fillRect(x, y, 10, 10);
+function drawSpot(point) {
+   context.fillRect(point.x, point.y, 10, 10);
 }
 
 var context;
