@@ -55,4 +55,8 @@ io.sockets.on('connection', function(socket) {
   socket.on('nachos', function(text) {
     socket.broadcast.emit('nachos', text)
   });
+  
+  socket.on('drawPoints', function(points) {
+    socket.broadcast.emit('drawPoints', points)
+  });
 });

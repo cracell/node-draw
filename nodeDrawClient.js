@@ -12,6 +12,7 @@ function connect() {
     socket.on('reconnecting', function( nextRetry ){ status_update("Reconnecting in " + nextRetry + " seconds"); });
     socket.on('reconnect_failed', function() { message("Reconnect Failed"); });
     socket.on('nachos', function(text) { message(text)});
+    socket.on('drawPoints', function(points) { drawSpot(points.x, points.y)});
 
     firstconnect = false;
   } else {
@@ -43,15 +44,26 @@ function nachos() {
   socket.emit('nachos', "Nachos guys!");
 }
 
-connect();
+function sendDrawPoints(x, y) {
+  socket.emit('drawPoints', {x: x, y: y})
+}
 
 $(function() {
-  $('#canvas').click(function(e){
-    
+  connect();
+  
+  $('#canvas').bind('mousedown', function(e){
+    drawSpot(e.clientX, e.clientY);
+    sendDrawPoints(e.clientX, e.clientY);
   });
+  
+  initCanvas();
 });
+
+function drawSpot(x, y) {
+   context.fillRect(x, y, 10, 10);
+}
 
 var context;
 function initCanvas() {
-  var context = $('#canvas').getContext('2d');  
+  context = document.getElementById('canvas').getContext('2d');  
 }
