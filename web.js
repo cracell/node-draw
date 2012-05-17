@@ -36,7 +36,7 @@ send404 = function(res) {
 server.listen(8080);
 
 // socket.io, let's eat some cake!
-var io = require(__dirname + '/node_modules/socket.io').listen(server);
+var io = require('socket.io').listen(server);
 
 // on a 'connetion' event
 io.sockets.on('connection', function(socket) {
