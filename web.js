@@ -15,6 +15,14 @@ server = http.createServer(function(req, res){
       res.end();
     });
     break;
+  case '/nodeWatch.html':
+    fs.readFile(__dirname + path, function(err, data){
+      if (err) return send404(res);
+        res.writeHead(200, {'Content-Type': 'text/html'});
+        res.write(data, 'utf8');
+        res.end();
+      });
+    break;
   case '/nodeDrawClient.js':
     fs.readFile(__dirname + path, function(err, data){
       if (err) return send404(res);
@@ -51,10 +59,6 @@ io.sockets.on('connection', function(socket) {
 
   socket.on('disconnect', function() {
     console.log("Connection " + socket.id + " terminated.");
-  });
-  
-  socket.on('nachos', function(text) {
-    socket.broadcast.emit('nachos', text)
   });
   
   socket.on('drawPoints', function(points) {

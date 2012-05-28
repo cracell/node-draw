@@ -6,11 +6,28 @@
     <script src='/nodeDrawClient.js' type="text/javascript"></script> 
     <!-- for ie -->
     <script src='/socket.io/socket.io.js' type="text/javascript"></script>
+    <script type="text/javascript">
+    $(function() {
+      $('#canvas').bind('mousedown', function(e){
+        $(this).bind('mousemove', function(e) {
+          updatePoint(pointsRelativeToObject(e, $(this)));
+        });
+      }).bind('mouseup', function(e){
+        $(this).unbind('mousemove');
+      });
+
+      $('#colorPicker').change(function(e){
+        context.fillStyle = $(this).val();
+      });
+    });
+    </script>
   </head>
   <body>
     <canvas id='canvas' width='800' height='500'></canvas>
     <h1>nodeDraw - A HTML5 Canvas 2d Context Drawing app</h1>
     <div>Status:<span id='status'>Waiting for input</span></div>
+    <input name="colorpicker" id="colorPicker" type="color">
+    <input name="colorpicker" id="colorPicker" type="color">
     <!-- <div><p id='status'>Waiting for input</p></div>
     <div><p id='message'></p></div>
     <button id='connect' onClick='connect()'/>Connect</button>

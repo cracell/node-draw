@@ -11,8 +11,7 @@ function connect() {
     socket.on('reconnect', function(){ status_update("Reconnected to Server"); });
     socket.on('reconnecting', function( nextRetry ){ status_update("Reconnecting in " + nextRetry + " seconds"); });
     socket.on('reconnect_failed', function() { message("Reconnect Failed"); });
-    socket.on('nachos', function(text) { message(text)});
-    socket.on('drawPoints', function(point) { drawSpot(point)});
+    socket.on('drawPoints', function(point) { drawPoint(point)});
 
     firstconnect = false;
   } else {
@@ -40,12 +39,19 @@ function send() {
   socket.send('Hello server!');
 }
 
-function nachos() {
-  socket.emit('nachos', "Nachos guys!");
-}
-
 function sendDrawPoints(point) {
   socket.emit('drawPoints', point)
+}
+
+function updatePoint(daPoint) {
+  newPoint = true;
+  point = daPoint; 
+}
+
+//Was using update point but causes the client to echo back the point it draws...hmm.
+function drawPoint(daPoint) {
+  clearCanvas(context);
+  drawCircle(daPoint, context);
 }
 
 function pointsRelativeToObject(e, object) {
@@ -55,23 +61,43 @@ function pointsRelativeToObject(e, object) {
   return(point); 
 }
 
+function drawCircle(point, context) {
+  context.beginPath();
+  context.arc(point.x, point.y, 10, 0, Math.PI*2, true);
+  context.closePath();
+  context.fill();
+}
+
+function clearCanvas(context) {
+  context.clearRect(0, 0, 800, 500);
+}
+
+var renderTimer = null,
+    newPoint = false,
+    point = {x: null, y: null},
+    context;
+
 $(function() {
+  renderTimer = setInterval(render, (20 / 1000));
   connect();
-  
-  $('#canvas').bind('mousedown', function(e){
-    var point = pointsRelativeToObject(e, $(this));
-    drawSpot(point);
-    sendDrawPoints(point);
-  });
   
   initCanvas();
 });
+
+function render() {
+  if (newPoint) {
+    drawPoint(point);
+    sendDrawPoints(point);
+    newPoint = false;
+  }  
+}
+
+//Setup mousemove to rerender on polling intervals so it doesn't fire too much like a dick fuck.
 
 function drawSpot(point) {
    context.fillRect(point.x, point.y, 10, 10);
 }
 
-var context;
 function initCanvas() {
   context = document.getElementById('canvas').getContext('2d');  
 }
