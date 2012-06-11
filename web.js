@@ -31,6 +31,14 @@ server = http.createServer(function(req, res){
         res.end();
       });
     break;
+  case '/sounds/meow11.wav':
+    fs.readFile(__dirname + path, function(err, data){
+      if (err) return send404(res);
+        res.writeHead(200, {'Content-Type': 'audio/wav'});
+        res.write(data, 'utf8');
+        res.end();
+      });
+    break;
   default: send404(res);
   }
 }),
@@ -63,6 +71,18 @@ io.sockets.on('connection', function(socket) {
   
   socket.on('drawPoints', function(points) {
     socket.broadcast.emit('drawPoints', points)
+  });
+  
+  socket.on('colorChange', function(color) {
+    socket.broadcast.emit('colorChange', color)
+  });
+  
+  socket.on('sizeChange', function(size) {
+    socket.broadcast.emit('sizeChange', size);
+  });
+  
+  socket.on('playMeow', function() {
+    socket.broadcast.emit('playMeow', 'ok');
   });
 });
 

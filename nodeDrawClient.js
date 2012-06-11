@@ -1,7 +1,10 @@
 var socket;
-var firstconnect = true;
+var firstconnect = true,
+    circleSize = 20,
+    catMeow;
 
 function connect() {
+  loadSounds();
   if (firstconnect) {
     socket = io.connect(null);
 
@@ -12,6 +15,9 @@ function connect() {
     socket.on('reconnecting', function( nextRetry ){ status_update("Reconnecting in " + nextRetry + " seconds"); });
     socket.on('reconnect_failed', function() { message("Reconnect Failed"); });
     socket.on('drawPoints', function(point) { drawPoint(point)});
+    socket.on('colorChange', function(color) { updateColor(color)});
+    socket.on('sizeChange', function(size) { updateSize(size)});
+    socket.on('playMeow', function() { catMeow.play()});
 
     firstconnect = false;
   } else {
@@ -48,6 +54,26 @@ function updatePoint(daPoint) {
   point = daPoint; 
 }
 
+function updateColor(color) {
+  context.fillStyle = color;  
+}
+
+function colorChange(color) {
+  updateColor(color);
+  socket.emit('colorChange', color);
+}
+
+function sizeChange(size) {
+  updateSize(size);
+  socket.emit('sizeChange', size);
+}
+
+function updateSize(size) {
+  if (parseInt(size) > 0) {
+    circleSize = size;  
+  }
+}
+
 //Was using update point but causes the client to echo back the point it draws...hmm.
 function drawPoint(daPoint) {
   clearCanvas(context);
@@ -63,13 +89,13 @@ function pointsRelativeToObject(e, object) {
 
 function drawCircle(point, context) {
   context.beginPath();
-  context.arc(point.x, point.y, 10, 0, Math.PI*2, true);
+  context.arc(point.x, point.y, circleSize, 0, Math.PI*2, true);
   context.closePath();
   context.fill();
 }
 
 function clearCanvas(context) {
-  context.clearRect(0, 0, 800, 500);
+  context.clearRect(0, 0, 1000, 700);
 }
 
 var renderTimer = null,
@@ -100,4 +126,13 @@ function drawSpot(point) {
 
 function initCanvas() {
   context = document.getElementById('canvas').getContext('2d');  
+}
+
+function loadSounds() {
+  catMeow = document.createElement('audio');
+  catMeow.src = '/sounds/meow11.wav';
+}
+
+function broadcastPlayMeow() {
+  socket.emit('playMeow');  
 }

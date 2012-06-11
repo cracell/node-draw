@@ -17,17 +17,31 @@
       });
 
       $('#colorPicker').change(function(e){
-        context.fillStyle = $(this).val();
+        colorChange($(this).val());
+      });
+      
+      $('#circleSize').change(function(e){
+        sizeChange($(this).val());
+      });
+      
+      $('#playMeowRemote').click(function(e){
+        broadcastPlayMeow();  
+      });
+      
+      $('#playMeowLocal').click(function(e){
+        catMeow.play();
       });
     });
     </script>
   </head>
   <body>
-    <canvas id='canvas' width='800' height='500'></canvas>
+    <canvas id='canvas' width='1000' height='700'></canvas>
     <h1>nodeDraw - A HTML5 Canvas 2d Context Drawing app</h1>
     <div>Status:<span id='status'>Waiting for input</span></div>
     <input name="colorpicker" id="colorPicker" type="color">
-    <input name="colorpicker" id="colorPicker" type="color">
+    <input type="number" id="circleSize" min="1" max="100" value="20">
+    <button id='playMeowRemote'>Play Meow on Remote</button>
+    <button id='playMeow'>Play Meow on Local</button>
     <!-- <div><p id='status'>Waiting for input</p></div>
     <div><p id='message'></p></div>
     <button id='connect' onClick='connect()'/>Connect</button>
